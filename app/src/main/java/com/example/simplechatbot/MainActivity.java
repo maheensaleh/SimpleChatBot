@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import ai.api.AIDataService;
 import ai.api.AIListener;
@@ -29,11 +31,19 @@ import ai.api.model.Result;
 public class MainActivity extends AppCompatActivity implements AIListener  {
 
     private AIService aiService;
+    private AIDataService aiDataService;
+    private  AIRequest aiRequest;
+    EditText question;
+    TextView ans;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        question  =(EditText)findViewById(R.id.question);
+        ans = (TextView)findViewById(R.id.textView);
 
         final AIConfiguration config = new AIConfiguration("a00aa80a92bb4867adcbb5b071c7ea66",
                 AIConfiguration.SupportedLanguages.English,
@@ -41,20 +51,20 @@ public class MainActivity extends AppCompatActivity implements AIListener  {
 
         aiService = AIService.getService(this, config);
         aiService.setListener(this);
-
-        final AIDataService aiDataService = new AIDataService(config);
-
-        final AIRequest aiRequest = new AIRequest();
-
+        aiDataService = new AIDataService(config);
+        aiRequest = new AIRequest();
         aiService.startListening();
 
-        String message = "what do you know about mobile apps?";
+
+    }
+
+    public void getreply(View view) {
+
+        String message = question.getText().toString();
 
 
         if (!message.equals(""))
         {
-
-
             aiRequest.setQuery(message);
             new AsyncTask<AIRequest,Void,AIResponse>(){
 
@@ -75,57 +85,17 @@ public class MainActivity extends AppCompatActivity implements AIListener  {
 
                         Result result = response.getResult();
                         String reply = result.getFulfillment().getSpeech();
-                        System.out.println("reply "+reply);
+                        System.out.println("reply this "+reply);
+                        ans.setText(reply);
 
                     }
                 }
             }.execute(aiRequest);
         }
         else {
-//               aiService.startListening();
+
+
         }
-
-
-
-
-
-//        final AIConfiguration config = new AIConfiguration("<Client Access Code>",
-//                AIConfiguration.SupportedLanguages.English,
-//                AIConfiguration.RecognitionEngine.System);
-//        AIDataService aiDataService = new AIDataService(this, config);
-//        AIServiceContextBuilder customAIServiceContext = AIServiceContextBuilder.buildFromSessionId();
-//        AIRequest aiRequest = new AIRequest();
-//        aiRequest.setQuery("hello");
-//
-//        try {
-//            return aiDataService.request(aiRequest, customAIServiceContext);
-//        } catch (AIServiceException e) {
-//            e.printStackTrace();
-//        }
-//
-
-//        AIConfiguration config = new AIConfiguration("a00aa80a92bb4867adcbb5b071c7ea66",
-//                AIConfiguration.SupportedLanguages.English,
-//                AIConfiguration.RecognitionEngine.System);
-//
-//        AIService aiService = AIService.getService(this, config);
-//        aiService.setListener(this);
-//
-//        try {
-//            AIResponse response = aiService.textRequest(new AIRequest("text"));
-//            System.out.println("response "+response);
-//        } catch (AIServiceException e) {
-//            e.printStackTrace();
-//        }
-//
-//        aiService.startListening();
-
-
-
-
-    }
-
-    public void btn(View view) {
     }
 
     /**
@@ -136,13 +106,14 @@ public class MainActivity extends AppCompatActivity implements AIListener  {
     @Override
     public void onResult(AIResponse result) {
 
-        Result results = result.getResult();
-
-        String message = results.getResolvedQuery();
-        System.out.println("message "+message);
-
-        String reply = results.getFulfillment().getSpeech();
-        System.out.println("reply "+reply);
+//        Result results = result.getResult();
+//
+//        String message = results.getResolvedQuery();
+//        System.out.println("message "+message);
+//
+//        String reply = results.getFulfillment().getSpeech();
+//        System.out.println("reply here "+reply);
+////        ans.setText(reply);
 
 
     }
@@ -191,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements AIListener  {
     public void onListeningFinished() {
 
     }
+
+
 
 
 //    /**
